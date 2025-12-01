@@ -1,3 +1,11 @@
+<!-- 
+    PROJECT: POLARIS // GUIDANCE LOG 
+    AUTHOR: SAJID / ZEP / ALCOR
+    STATUS: PEAK AESTHETIC REACHED. COMMS UPDATED. ANIMATIONS ADDED.
+    FIX: Implemented robust error handling for API call to prevent "The Void" errors.
+    NOTE: If this code looks chaotic, it matches my brain. 
+          Gemini helped, but the vibes are 100% manual.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,15 +13,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POLARIS // SYSTEM ROOT</title>
     
+    <!-- Load Tailwind (The backbone of modern laz... efficiency) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Fonts: IBM Plex Mono is non-negotiable for the retro feel -->
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     
+    <!-- Icons: Lucide (Clean, sharp, vector goodness) -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
+    <!-- Audio: Tone.js for the UI blips -->
     <script src="https://cdn.jsdelivr.net/npm/tone@14.7.58/build/Tone.min.js"></script>
     
-    <script src="https://cdn.jsdelivr.com/gh/adryd325/oneko.js@main/oneko.js"></script> 
+    <!-- Pet: Oneko.js (The cat is mandatory. Do not remove the cat.) -->
+    <script src="https://cdn.jsdelivr.dev/gh/adryd325/oneko.js@main/oneko.js"></script> 
 
     <style>
         /* --- 1. THEME ENGINE (SEPIA VOID) --- */
@@ -65,7 +78,7 @@
         }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
 
-        /* --- 3. RETRO VISUAL EFFECTS --- */
+        /* --- 3. RETRO VISUAL EFFECTS & ANIMATIONS --- */
         
         /* The Vignette (Dark corners) */
         body::before {
@@ -77,7 +90,7 @@
             z-index: 90;
         }
 
-        /* The Scanlines */
+        /* The Scanlines & CRT Flicker */
         .scanlines::after {
             content: " ";
             display: block;
@@ -89,25 +102,15 @@
             z-index: 91;
             pointer-events: none;
             opacity: var(--scanline-opacity);
+            /* ADDED FLICKER ANIMATION */
+            animation: flicker 0.15s infinite alternate; 
         }
 
-        /* The Glow (Phosphor Persistence) */
+        /* The Glow (Phosphor Persistence) & Pulse */
         .glow-text {
             text-shadow: var(--phosphor-glow);
-        }
-
-        /* --- 4. COMPONENT STYLES --- */
-        
-        /* The "Glass" Panels */
-        .terminal-box {
-            background-color: var(--glass-bg);
-            border: 1px solid var(--accent-dim);
-            box-shadow: 0 0 15px -5px rgba(0,0,0,0.5);
-        }
-
-        .command-prompt {
-            color: var(--accent-color);
-            font-weight: 700;
+            /* ADDED PULSE ANIMATION */
+            animation: pulse 4s infinite ease-in-out alternate; 
         }
 
         /* Distressed Title Effect */
@@ -119,6 +122,11 @@
             text-transform: uppercase;
         }
 
+        /* Active Glitch Animation for Title */
+        .glitch-anim {
+            animation: glitch-anim 2s linear infinite alternate;
+        }
+
         /* Links */
         .hover-link {
             border-bottom: 1px dashed var(--accent-dim);
@@ -128,6 +136,13 @@
             background-color: var(--accent-color);
             color: var(--bg-color);
             border-bottom-style: solid;
+        }
+        
+        /* Input Focus Border Animation */
+        .input-focus:focus-within {
+            box-shadow: 0 0 10px rgba(220, 191, 166, 0.6);
+            border-color: var(--accent-color);
+            transition: box-shadow 0.3s, border-color 0.3s;
         }
 
         /* Boot Screen Overlay */
@@ -149,10 +164,56 @@
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+        /* KEYFRAMES */
+        
+        /* Subtle Screen Flicker (For CRT feel) */
+        @keyframes flicker {
+            0% { opacity: var(--scanline-opacity); }
+            5% { opacity: calc(var(--scanline-opacity) + 0.05); }
+            10% { opacity: var(--scanline-opacity); }
+            25% { opacity: calc(var(--scanline-opacity) - 0.05); }
+            100% { opacity: var(--scanline-opacity); }
+        }
+
+        /* Breathing Glow Effect */
+        @keyframes pulse {
+            0% { text-shadow: 0 0 8px rgba(220, 191, 166, 0.4); }
+            50% { text-shadow: 0 0 12px rgba(220, 191, 166, 0.6), 0 0 5px rgba(220, 191, 166, 0.2); }
+            100% { text-shadow: 0 0 8px rgba(220, 191, 166, 0.4); }
+        }
+
+        /* Glitch Animation (For Title) */
+        @keyframes glitch-anim {
+            0% {
+                transform: translate(0);
+                text-shadow: 2px 2px 0px rgba(255, 0, 0, 0.5), -2px -2px 0px rgba(0, 0, 255, 0.5);
+            }
+            20% {
+                transform: translate(-5px, 5px);
+                text-shadow: -2px 2px 0px rgba(255, 0, 0, 0.5), 2px -2px 0px rgba(0, 255, 0, 0.5);
+            }
+            40% {
+                transform: translate(0);
+                text-shadow: 2px -2px 0px rgba(0, 255, 0, 0.5), -2px 2px 0px rgba(255, 0, 0, 0.5);
+            }
+            60% {
+                transform: translate(5px, -5px);
+                text-shadow: 2px 2px 0px rgba(0, 0, 255, 0.5), -2px -2px 0px rgba(255, 0, 0, 0.5);
+            }
+            80% {
+                transform: translate(-5px, -5px);
+                text-shadow: -2px -2px 0px rgba(0, 255, 0, 0.5), 2px 2px 0px rgba(0, 0, 255, 0.5);
+            }
+            100% {
+                transform: translate(0);
+                text-shadow: 2px 2px 0px rgba(255, 0, 0, 0.5), -2px -2px 0px rgba(0, 0, 255, 0.5);
+            }
+        }
     </style>
 </head>
 <body class="scanlines p-4 md:p-8">
 
+    <!-- SVG Filters for that crunchy text look -->
     <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <filter id="distort-text">
@@ -162,33 +223,44 @@
         </defs>
     </svg>
 
+    <!-- BOOT SCREEN (The fake loading sequence) -->
     <div id="boot-screen">
         <div id="boot-log" class="font-mono whitespace-pre-wrap leading-tight"></div>
     </div>
 
+    <!-- MAIN INTERFACE -->
     <main id="main-interface" class="max-w-3xl mx-auto h-full flex flex-col opacity-0 transition-opacity duration-1000">
         
+        <!-- HEADER -->
         <header class="mb-4 p-4 rounded-sm terminal-box flex justify-between items-start shrink-0">
             <div>
-                <h1 class="glitch-title text-4xl md:text-5xl lg:text-6xl leading-none text-[var(--text-main)] glow-text">
+                <!-- ADDED glitch-anim CLASS FOR TITLE EFFECT -->
+                <h1 class="glitch-title text-4xl md:text-5xl lg:text-6xl leading-none text-[var(--text-main)] glow-text glitch-anim">
                     POLARIS
                 </h1>
                 <div class="flex items-center gap-2 mt-2 text-xs font-bold tracking-widest text-[var(--text-muted)]">
-                    <span class="w-2 h-2 rounded-full bg-[var(--accent-color)] animate-pulse"></span>
+                    <!-- Added subtle ping animation -->
+                    <span class="w-2 h-2 rounded-full bg-[var(--accent-color)] animate-ping absolute"></span>
+                    <span class="w-2 h-2 rounded-full bg-[var(--accent-color)] ml-1"></span>
                     SYSTEM ONLINE // GUIDANCE LOG
                 </div>
             </div>
             
-            <button onclick="toggleTheme()" class="p-2 border border-[var(--accent-dim)] hover:bg-[var(--accent-dim)] transition-colors rounded-sm">
+            <button onclick="toggleTheme()" class="p-2 border border-[var(--accent-dim)] hover:bg-[var(--accent-dim)] transition-colors rounded-sm hover:border-[var(--accent-color)]">
                 <i id="theme-icon" data-lucide="moon" class="w-5 h-5 text-[var(--accent-color)]"></i>
             </button>
         </header>
 
-        <div id="terminal-output" class="flex-grow terminal-box mb-4 p-4 rounded-sm overflow-y-auto font-mono text-sm leading-relaxed space-y-2 relative">
-            </div>
+        <!-- OUTPUT TERMINAL (Where the chat happens) -->
+        <!-- Added a border glow for visual pop -->
+        <div id="terminal-output" class="flex-grow terminal-box mb-4 p-4 rounded-sm overflow-y-auto font-mono text-sm leading-relaxed space-y-2 relative border-2 border-[var(--accent-dim)]">
+            <!-- Content injected via JS -->
+        </div>
 
+        <!-- INPUT AREA -->
         <section class="mb-4 shrink-0">
-            <div class="flex items-center terminal-box p-3 rounded-sm border-l-4 border-l-[var(--accent-color)]">
+            <!-- Added input-focus class for animated focus state -->
+            <div class="flex items-center terminal-box p-3 rounded-sm border-l-4 border-l-[var(--accent-color)] input-focus">
                 <label for="command-input" id="prompt-label" class="text-lg whitespace-nowrap pr-3 command-prompt glow-text">
                     POLARIS >
                 </label>
@@ -207,10 +279,13 @@
             </div>
         </section>
 
+        <!-- DASHBOARD (The quick links) -->
         <section class="terminal-box p-4 rounded-sm shrink-0">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                <!-- Links injected via JS -->
                 <div id="links-container" class="col-span-2 md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-2"></div>
                 
+                <!-- Status Panel -->
                 <div class="col-span-2 md:col-span-1 border-l border-[var(--accent-dim)] pl-4 flex flex-col justify-between opacity-70">
                     <div>
                         <div class="font-bold text-[var(--accent-color)] mb-1">OPERATOR</div>
@@ -358,7 +433,8 @@
                 const p = document.createElement('div');
                 p.textContent = line;
                 els.bootLog.appendChild(p);
-                await new Promise(r => setTimeout(r, Math.random() * 300 + 100));
+                // Faster boot sequence for better UX after initial load
+                await new Promise(r => setTimeout(r, Math.random() * 50 + 50)); 
             }
 
             await new Promise(r => setTimeout(r, 800));
@@ -383,14 +459,29 @@
         // --- OUTPUT HANDLER ---
         const printOutput = (html, useTyping = true) => {
             const div = document.createElement('div');
-            div.className = "mb-4 border-b border-[var(--accent-dim)] pb-2 last:border-0";
+            // Added animation class for output rows
+            div.className = "mb-4 border-b border-[var(--accent-dim)] pb-2 last:border-0 opacity-0 animate-fadeIn"; 
             els.output.appendChild(div);
+            
+            // Define the fade-in animation for each new line
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(5px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fadeIn {
+                    animation: fadeIn 0.3s ease-out forwards;
+                }
+            `;
+            document.head.appendChild(style);
 
             if (useTyping && !html.includes("<img") && !html.includes("<ul")) {
                 // Only type plain-ish text blocks to avoid breaking complex HTML
                 typeWriter(div, html);
             } else {
                 div.innerHTML = html;
+                div.classList.remove('opacity-0'); // Remove initial opacity if instant
                 els.output.scrollTop = els.output.scrollHeight;
                 playSound('success');
             }
@@ -398,11 +489,13 @@
 
         const printPrompt = (cmd, type = 'user') => {
             const div = document.createElement('div');
-            div.className = "mb-1 text-xs opacity-70";
+            // Added animation class for prompt lines
+            div.className = "mb-1 text-xs opacity-70 animate-fadeIn";
             const prefix = type === 'user' ? 'OPR' : 'SYS'; // Changed 'AI' to 'SYS'
             const color = type === 'user' ? 'var(--text-muted)' : 'var(--success-color)';
             div.innerHTML = `<span style="color:${color}">[${prefix}]:</span> ${cmd}`;
             els.output.appendChild(div);
+            els.output.scrollTop = els.output.scrollHeight;
         };
 
         // --- COMMAND PROCESSOR ---
@@ -560,7 +653,7 @@
             let html = '';
             USER_DATA.links.forEach(link => {
                 html += `
-                    <a href="${link.url}" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group">
+                    <a href="${link.url}" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
                         <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">
                             ${link.label}
                         </div>
