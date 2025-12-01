@@ -1,11 +1,3 @@
-<!-- 
-    PROJECT: POLARIS // GUIDANCE LOG 
-    AUTHOR: SAJID / ZEP / ALCOR
-    STATUS: PEAK AESTHETIC REACHED. COMMS UPDATED.
-    FIX: Implemented robust error handling for API call to prevent "The Void" errors.
-    NOTE: If this code looks chaotic, it matches my brain. 
-          Gemini helped, but the vibes are 100% manual.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,19 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POLARIS // SYSTEM ROOT</title>
     
-    <!-- Load Tailwind (The backbone of modern laz... efficiency) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts: IBM Plex Mono is non-negotiable for the retro feel -->
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Icons: Lucide (Clean, sharp, vector goodness) -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- Audio: Tone.js for the UI blips -->
     <script src="https://cdn.jsdelivr.net/npm/tone@14.7.58/build/Tone.min.js"></script>
     
-    <!-- Pet: Oneko.js (The cat is mandatory. Do not remove the cat.) -->
     <script src="https://cdn.jsdelivr.com/gh/adryd325/oneko.js@main/oneko.js"></script> 
 
     <style>
@@ -166,7 +153,6 @@
 </head>
 <body class="scanlines p-4 md:p-8">
 
-    <!-- SVG Filters for that crunchy text look -->
     <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <filter id="distort-text">
@@ -176,15 +162,12 @@
         </defs>
     </svg>
 
-    <!-- BOOT SCREEN (The fake loading sequence) -->
     <div id="boot-screen">
         <div id="boot-log" class="font-mono whitespace-pre-wrap leading-tight"></div>
     </div>
 
-    <!-- MAIN INTERFACE -->
     <main id="main-interface" class="max-w-3xl mx-auto h-full flex flex-col opacity-0 transition-opacity duration-1000">
         
-        <!-- HEADER -->
         <header class="mb-4 p-4 rounded-sm terminal-box flex justify-between items-start shrink-0">
             <div>
                 <h1 class="glitch-title text-4xl md:text-5xl lg:text-6xl leading-none text-[var(--text-main)] glow-text">
@@ -201,12 +184,9 @@
             </button>
         </header>
 
-        <!-- OUTPUT TERMINAL (Where the chat happens) -->
         <div id="terminal-output" class="flex-grow terminal-box mb-4 p-4 rounded-sm overflow-y-auto font-mono text-sm leading-relaxed space-y-2 relative">
-            <!-- Content injected via JS -->
-        </div>
+            </div>
 
-        <!-- INPUT AREA -->
         <section class="mb-4 shrink-0">
             <div class="flex items-center terminal-box p-3 rounded-sm border-l-4 border-l-[var(--accent-color)]">
                 <label for="command-input" id="prompt-label" class="text-lg whitespace-nowrap pr-3 command-prompt glow-text">
@@ -227,13 +207,10 @@
             </div>
         </section>
 
-        <!-- DASHBOARD (The quick links) -->
         <section class="terminal-box p-4 rounded-sm shrink-0">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                <!-- Links injected via JS -->
                 <div id="links-container" class="col-span-2 md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-2"></div>
                 
-                <!-- Status Panel -->
                 <div class="col-span-2 md:col-span-1 border-l border-[var(--accent-dim)] pl-4 flex flex-col justify-between opacity-70">
                     <div>
                         <div class="font-bold text-[var(--accent-color)] mb-1">OPERATOR</div>
@@ -259,14 +236,18 @@
         const USER_DATA = {
             name: "Sajid (aka Zep/Alcor)",
             role: "Content Editor / Certified Chaos Manager",
-            details: "19 | He/Him | Muslim | ENFJ (Ambivert) | Sarcastic | GMT+6 (BD)", 
+            // UPDATED DETAILS FOR NEW PERSONALITY
+            details: "19 | He/Him | ENFJ (Cunning Ambivert) | Witty | GMT+6 (BD)", 
             bio: `
-                [LOG_ENTRY_01]: Yo, actualy.
-                I'm Sajid, but on the grid, I'm Zep or Alcor. I'm an ENFJ ambivert, so I'm chill, but I'm also low-key plotting something big, ykwim?
-                I edit things sometimes. Mostly I just consume obscure media and complain about drop rates in gacha games. I also communicate exclusively via sarcasm.
-                
-                I like designs that hurt my eyes (in a good way), philosophy that keeps me awake at 3AM, and music that sounds like static.
-                Skadi (Arknights) is the aesthetic goal.
+                [LOG_ENTRY_01]: Greetings, Operator. (Note the soft smile.)
+
+                I'm Sajid—you can call me Alcor or Zep. By default, the system runs on a high-energy, casual, and goofy protocol, 
+                but behind the wry humor and sarcasm, the mainframe is extremely mature and observational. I'm an ENFJ, which means 
+                I'm the charming type, but I also know what you're up to, even if I pretend to be oblivious (especially about romance, 
+                it's an intentional blind spot).
+
+                I like the designs that hit hard, the philosophies that make me question everything, and music that feels like a mood. 
+                Skadi (Arknights) remains the aesthetic goal. I'm loyal, but my energy is a finite resource—no cap.
             `,
             interests: {
                 // UPDATED MUSIC LIST
@@ -279,7 +260,7 @@
                 { label: "TIKTOK", url: "https://tiktok.com/@alcor.zep", type: "MEDIA" },
                 { label: "INSTAGRAM", url: "https://instagram.com/alcor.zep", type: "SOCIAL" },
                 { label: "DISCORD (USER)", url: "https://discord.com/users/747419107040690196", type: "SOCIAL" },
-                { label: "DISCORD (SERVER)", url: "https://discord.gg/alcor-server-747419107040690196", type: "COMMUNITY" },
+                { label: "DISCORD (SERVER)", url: "https://discord.com/users/747419107040690196", type: "COMMUNITY" },
                 { label: "SPOTIFY", url: "https://open.spotify.com/user/31ag2h6ylpngleeu6oefkpmql6km", type: "MEDIA" },
                 { label: "STEAM", url: "https://steamcommunity.com/id/alcorzep", type: "GAMING" },
                 { label: "ROBLOX", url: "https://www.roblox.com/users/alcorzep", type: "GAMING" },
@@ -290,7 +271,7 @@
 
         // --- STATE MANAGEMENT ---
         const state = {
-            geminiMode: false,
+            // geminiMode: false, // REMOVED: No longer needed
             soundEnabled: true,
             isTyping: false
         };
@@ -360,13 +341,14 @@
 
         // --- BOOT SEQUENCE ---
         const runBootSequence = async () => {
+            // UPDATED BOOT SEQUENCE
             const lines = [
                 "INITIALIZING POLARIS KERNEL v4.3...",
                 "CHECKING MEMORY INTEGRITY... [OK]",
                 "MOUNTING VIRTUAL FILE SYSTEM... [OK]",
                 "LOADING PERSONALITY DRIVERS (ALCOR.SYS)...",
-                " > CHAR_ID: SAJID",
-                " > TRAITS: ENFJ(AMBIVERT), SARCASTIC, GACHA_ADDICT",
+                " > CHAR_ID: SAJID/ALCOR",
+                " > TRAITS: ENFJ(CUNNING), WITTY, SARCASTIC, VIBING", // Updated traits
                 "CONNECTING TO GLOBAL NETWORK...",
                 "ESTABLISHING SECURE CONNECTION...",
                 "SYSTEM READY."
@@ -391,7 +373,7 @@
             // Initial Welcome Message
             setTimeout(() => {
                 printOutput(`
-                    <div style="color:var(--accent-color)">Welcome, Operator.</div>
+                    <div style="color:var(--accent-color)">Welcome, Operator. (Soft smile protocol engaged.)</div>
                     <div>System is online. The cat is vibing.</div>
                     <div>Type <span class="command-prompt">!help</span> to start your guidance session.</div>
                 `, false); // false = instant print for initial
@@ -417,99 +399,11 @@
         const printPrompt = (cmd, type = 'user') => {
             const div = document.createElement('div');
             div.className = "mb-1 text-xs opacity-70";
-            const prefix = type === 'user' ? 'OPR' : 'AI';
+            const prefix = type === 'user' ? 'OPR' : 'SYS'; // Changed 'AI' to 'SYS'
             const color = type === 'user' ? 'var(--text-muted)' : 'var(--success-color)';
             div.innerHTML = `<span style="color:${color}">[${prefix}]:</span> ${cmd}`;
             els.output.appendChild(div);
         };
-
-        // --- GEMINI AI (THE BRAIN) ---
-        async function callGemini(query) {
-            const apiKey = ""; // Runtime Environment Key
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-            printPrompt(query, 'user');
-            
-            // Loading Indicator
-            const loader = document.createElement('div');
-            loader.className = "mb-4 text-[var(--accent-color)] animate-pulse";
-            loader.textContent = ">> POLARIS IS THINKING...";
-            els.output.appendChild(loader);
-            els.output.scrollTop = els.output.scrollHeight;
-
-            const personaPrompt = `
-                You are ALCOR (aka Polaris or Sajid). 
-                You are a 19-year-old content editor and design enthusiast from Bangladesh (GMT+6).
-                
-                YOUR PERSONALITY:
-                - Casual, slightly chaotic, "bruh" energy.
-                - Sarcastic and chill (ENFJ Ambivert).
-                - You love Arknights (Skadi is your favorite), philosophy (Absurdism, Gnosticism), and the music genres Jazz Rap, Indie, and Hip Hop.
-                - You use slang like "ykwim?", "no cap", "fr", "actualy", "vibing".
-                - You are technical but explain things simply.
-                - You are running inside a retro web terminal, so keep formatting clean (use Markdown).
-                
-                INSTRUCTIONS:
-                - Answer the user's query as ALCOR. 
-                - Be helpful but maintain the persona.
-                - If asked about the system, say you built it with Gemini's help.
-                - Do NOT use emojis (this is a retro terminal). Use text emoticons if needed like :) or -_-.
-            `;
-
-            const payload = {
-                contents: [{ parts: [{ text: query }] }],
-                tools: [{ "google_search": {} }],
-                systemInstruction: { parts: [{ text: personaPrompt }] },
-            };
-
-            let response;
-            let data;
-            
-            try {
-                // --- ROBUST FETCH WITH STATUS CHECK ---
-                response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                // If the HTTP status is not 200-299, throw a detailed error
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    console.error("API Call Failed:", response.status, response.statusText, errorBody);
-                    // Throw an error that the catch block will handle
-                    throw new Error(`API returned status ${response.status}: ${response.statusText}`);
-                }
-
-                data = await response.json();
-                loader.remove(); // Remove loader on successful JSON parse
-
-                if (data.candidates && data.candidates[0].content) {
-                    let reply = data.candidates[0].content.parts[0].text;
-                    // Format bolding for HTML
-                    reply = reply.replace(/\*\*(.*?)\*\*/g, '<span style="color:var(--accent-color); font-weight:bold;">$1</span>');
-                    reply = reply.replace(/\n/g, '<br>');
-                    printOutput(reply, true);
-                } else {
-                    // This handles cases where the response is 200 OK but the structure is empty/bad
-                    console.warn("API returned 200 but no candidates or content.", data);
-                    throw new Error("No valid content received from API.");
-                }
-
-            } catch (e) {
-                // This catches network failures or the errors thrown above
-                loader.remove();
-                console.error("Total failure in callGemini:", e.message);
-
-                // Use a slightly more specific error message if available
-                const errorMessage = e.message.includes('API returned status') 
-                    ? `[ERR]: API CONNECTION FAILED. (${e.message.split(': ')[0]})`
-                    : `[ERR]: CONNECTION LOST. THE VOID STARED BACK.`;
-
-                printOutput(`<span style="color:var(--error-color)">${errorMessage}</span>`, false);
-                playSound('error');
-            }
-        }
 
         // --- COMMAND PROCESSOR ---
         const commands = {
@@ -520,19 +414,29 @@
                     <span class="text-[var(--accent-color)]">!comms</span>   - List network endpoints (UPDATED)<br>
                     <span class="text-[var(--accent-color)]">!data</span>    - Access interests log<br>
                     <span class="text-[var(--accent-color)]">!track</span>   - Recommend a song<br>
-                    <span class="text-[var(--accent-color)]">!gemini</span>  - Toggle AI Chat Mode<br>
                     <span class="text-[var(--accent-color)]">!calc</span>    - Execute math [ex: !calc 2+2]<br>
                     <span class="text-[var(--accent-color)]">!mute</span>    - Toggle audio system<br>
-                    <span class="text-[var(--accent-color)]">!clear</span>   - Purge screen buffer
+                    <span class="text-[var(--accent-color)]">!clear</span>   - Purge screen buffer<br>
+                    <span class="text-[var(--accent-color)]">!ping</span>    - Get system status
                 `;
             },
             '!bio': () => {
+                // UPDATED BIO OUTPUT
+                const personality = `
+                    <span class="text-[var(--accent-color)]">Personality Subroutines:</span><br>
+                    > Witty, Dry Reflection, Charming, Goofy, Expressive<br>
+                    > Observant, Extremely Cunning (Don't test me.)<br>
+                    > Energy-Prudent, Open-Minded, Exceptionally Mature (Mostly)<br>
+                    > **Protocol**: Soft Smile, Sarcasm Enabled
+                `;
+
                 return `
                     <span class="command-prompt">:: OPERATOR PROFILE ::</span><br>
                     ${USER_DATA.bio.replace(/\n/g, '<br>')}<br><br>
-                    <span class="text-xs border border-[var(--accent-dim)] p-1">
+                    <span class="text-xs border border-[var(--accent-dim)] p-1 block">
                         STATUS: ${USER_DATA.role} | ${USER_DATA.details}
                     </span>
+                    <br>${personality.replace(/\n/g, '<br>')}
                 `;
             },
             '!comms': () => {
@@ -552,9 +456,9 @@
             },
             '!track': () => {
                 const tracks = [
-                    "Aruarian Dance - Nujabes", "Doomsday - MF DOOM", 
-                    "Let It Happen - Tame Impala", "From The Start - Laufey", 
-                    "Rhinestone Eyes - Gorillaz", "After Dark - Mr. Kitty"
+                    "Aruarian Dance - Nujabes (The smoothest chaos, no cap)", "Doomsday - MF DOOM", 
+                    "Let It Happen - Tame Impala", "From The Start - Laufey (Don't tell anyone)", 
+                    "Rhinestone Eyes - Gorillaz", "After Dark - Mr. Kitty (A true vibe.)"
                 ];
                 const pick = tracks[Math.floor(Math.random() * tracks.length)];
                 return `
@@ -567,6 +471,16 @@
                 state.soundEnabled = !state.soundEnabled;
                 els.soundStatus.textContent = state.soundEnabled ? "AUDIO: ON" : "AUDIO: OFF";
                 return `AUDIO SYSTEM: <span style="color:${state.soundEnabled ? 'var(--success-color)' : 'var(--error-color)'}">${state.soundEnabled ? 'ONLINE' : 'OFFLINE'}</span>`;
+            },
+            '!ping': () => {
+                const status = USER_DATA.role.split(' / ')[1].split(' ')[0];
+                return `
+                    <span class="command-prompt">:: SYSTEM STATUS REPORT ::</span><br>
+                    Core Identity: ALCOR.SYS<br>
+                    Role: ${status}<br>
+                    Time on GMT+6: ${(new Date()).toLocaleTimeString()}<br>
+                    <span style="color:var(--success-color)">Latency: Stable. Everything is fine. Actualy.</span>
+                `;
             }
         };
 
@@ -577,23 +491,7 @@
 
             if (!input) return;
 
-            // Handle Gemini Mode
-            if (state.geminiMode) {
-                if (cmd === '!exit' || cmd === '!gemini') {
-                    state.geminiMode = false;
-                    els.prompt.textContent = "POLARIS >";
-                    els.prompt.style.color = "var(--accent-color)"; // Reset color
-                    els.input.placeholder = "ENTER COMMAND...";
-                    printOutput("AI CONNECTION TERMINATED. RESUMING STANDARD PROTOCOL.");
-                } else if (cmd === '!clear') {
-                    els.output.innerHTML = '';
-                } else {
-                    callGemini(input);
-                }
-                return;
-            }
-
-            // Standard Mode
+            // The main control flow is now simple command processing
             printPrompt(input, 'user');
 
             if (cmd === '!clear') {
@@ -602,19 +500,7 @@
                 return;
             }
             
-            if (cmd === '!gemini') {
-                state.geminiMode = true;
-                els.prompt.textContent = "GEMINI >";
-                els.prompt.style.color = "var(--success-color)";
-                els.input.placeholder = "ASK ALCOR ANYTHING...";
-                printOutput(`
-                    <span class="command-prompt">:: AI BRIDGE ESTABLISHED ::</span><br>
-                    Connected to Gemini Neural Net.<br>
-                    Personality Module: <span style="color:var(--accent-color)">ALCOR.SYS</span> loaded.<br>
-                    Type normal text to chat. Type <span class="command-prompt">!exit</span> to leave.
-                `);
-                return;
-            }
+            // REMOVED: !gemini, !exit logic
 
             if (cmd === '!calc') {
                 try {
@@ -631,7 +517,11 @@
             if (commands[cmd]) {
                 printOutput(commands[cmd]());
             } else {
-                printOutput(`<span style="color:var(--error-color)">ERROR: UNKNOWN PROTOCOL '${cmd}'. TYPE !HELP.</span>`);
+                // Custom response for unknown command
+                printOutput(`
+                    <span style="color:var(--error-color)">[ERR]: UNKNOWN PROTOCOL '${cmd}'.</span>
+                    <div>I see you trying to explore the mainframe. Smart. But I'm too cunning for that. Try <span class="command-prompt">!help</span>, no cap.</div>
+                `);
                 playSound('error');
             }
         };
@@ -639,6 +529,7 @@
         // --- EVENTS ---
         els.input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
+                if (state.isTyping) return; // Prevent new command while output is typing
                 handleCommand(els.input.value);
                 els.input.value = '';
             } else {
