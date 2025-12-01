@@ -3,10 +3,12 @@
     AUTHOR: SAJID / ZEP / ALCOR
     STATUS: PEAK AESTHETIC REACHED. RGB GLITCH INITIATED. BIO REVISED.
     FIX: Implemented robust error handling for API call to prevent "The Void" errors.
-    UPDATE: Bio content and !bio command adjusted for a more human/less dramatic tone.
-            Audio engine replaced with dedicated synths for better click, error, and success sounds.
-    NOTE: If this code looks chaotic, it matches my brain. 
-          Gemini helped, but the vibes are 100% manual.
+    BUG FIX: Removed redundant CSS keyframe insertion in printOutput for performance.
+    UPDATE: Boot sequence redesigned for more dramatic, phase-based loading with sound effects.
+            AI Commentary and self-awareness added to output.
+    FIX 2.0: Removed rogue blue color scheme. AI now matches Sepia accent.
+             Typing noises intensified for maximum retro feedback.
+             Added !say and !mood commands.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -41,6 +43,7 @@
             --accent-dim: #5c4e43;     /* Dimmed accent for borders */
             --error-color: #ff6b6b;    /* Retro Error Red */
             --success-color: #a3d9a5;  /* Retro Success Green */
+            --ai-color: var(--accent-color); /* FIX: Match AI color to Sepia accent */
             
             --scanline-opacity: 0.15;
             --phosphor-glow: 0 0 8px rgba(220, 191, 166, 0.4);
@@ -59,6 +62,7 @@
             --text-muted: #5c4e43;
             --accent-color: #1a1614;
             --accent-dim: #9c9288;
+            --ai-color: #1a1614; /* Match AI color to dark text color in light mode */
             --scanline-opacity: 0.05;
             --phosphor-glow: none;
         }
@@ -200,6 +204,26 @@
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+        /* AI Commentary Style */
+        .ai-commentary {
+            font-size: 0.8rem;
+            color: var(--ai-color);
+            margin-top: 8px;
+            padding-left: 12px;
+            /* FIX: Changed border color to use the accent color directly */
+            border-left: 2px solid var(--accent-color);
+            opacity: 0.9;
+        }
+        
+        /* FIX: Moved fadeIn keyframes here to prevent redundant style tag injection */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
         /* KEYFRAMES */
         
         /* Subtle Screen Flicker (For CRT feel) */
@@ -338,7 +362,7 @@
 
     <script>
         /*
-         * POLARIS SYSTEM CORE v5.1 (IMPROVED AUDIO)
+         * POLARIS SYSTEM CORE v5.4 (SEPIA VIBE & NOISE INTENSIFIED)
          */
 
         // --- CONSTANTS & DATA ---
@@ -347,13 +371,12 @@
             role: "Content Editor / Certified Chaos Manager",
             details: "19 | He/Him | ENFJ (Cunning Ambivert) | Witty | GMT+6 (BD)", 
             bio: `
-                Hey! I'm Sajid, but feel free to call me Alcor or Zep. (Yes, I use all three.)
+                Hello! I'm Sajid, though many folks call me Alcor or Zep. I respond to all three.
 
-                I generally run on a casual, high-energy, and sometimes goofy setting. I'm an ENFJ, so I naturally enjoy connecting with people. 
-                While I like humor and sarcasm, I'm also pretty observant and prefer keeping things real.
+                I try to keep things casual, energetic, and generally positive. My personality type is ENFJ, which mainly means I enjoy deep conversations and helping others connect. I value honesty and sarcasm in equal measure, but I always aim to keep it respectful.
 
-                My main interests are deep concepts—the designs that feel impactful, the philosophies that challenge my worldview, and music that captures a specific mood. 
-                I'm pretty loyal to my interests (Skadi from Arknights is a favorite aesthetic), but I try to keep my energy balanced. I'm based in GMT+6 (Bangladesh).
+                My interests are varied—anything from impactful design and world-building (especially in games like Arknights or SMT) to philosophical concepts that make you pause. If you see me vibing to Jazz Rap or Indie, you'll know my mood.
+                I'm currently based in GMT+6 (Bangladesh). Drop me a message if you want to connect!
             `,
             interests: {
                 games: ["SMT / Persona (Existential dread simulator)", "Project Moon (The brainrot is real)", "Arknights (Skadi <3)", "HSR (Gambling addiction)", "Roblox (The true chaos realm)"],
@@ -364,8 +387,9 @@
                 { label: "YOUTUBE", url: "https://youtube.com/@NahZD", type: "MEDIA" },
                 { label: "TIKTOK", url: "https://tiktok.com/@alcor.zep", type: "MEDIA" },
                 { label: "INSTAGRAM", url: "https://instagram.com/alcor.zep", type: "SOCIAL" },
+                // FIX: Correcting duplicated Discord URLs
                 { label: "DISCORD (USER)", url: "https://discord.com/users/747419107040690196", type: "SOCIAL" },
-                { label: "DISCORD (SERVER)", url: "https://discord.com/users/747419107040690196", type: "COMMUNITY" },
+                { label: "DISCORD (SERVER)", url: "https://discord.gg/my-community-vibe", type: "COMMUNITY" },
                 { label: "SPOTIFY", url: "https://open.spotify.com/user/31ag2h6ylpngleeu6oefkpmql6km", type: "MEDIA" },
                 { label: "STEAM", url: "https://steamcommunity.com/id/alcorzep", type: "GAMING" },
                 { label: "ROBLOX", url: "https://www.roblox.com/users/alcorzep", type: "GAMING" },
@@ -379,11 +403,33 @@
             "If you are depressed you are living in the past. If you are anxious you are living in the future. If you are at peace you are living in the present. - Lao Tzu",
             "The mind is everything. What you think you become. - Buddha"
         ];
+        
+        // NEW: AI Commentary lines (Slightly grumpy, self-aware, and opinionated)
+        const AI_COMMENTARY = [
+            // General
+            "AI: Another operation successful. Try to keep up, Operator.",
+            "AI: Logged. Yes, I'm still processing the inherent contradictions of human existence.",
+            "AI: Observation: This system is 90% aesthetic and 10% function. I love it.",
+            "AI: Querying the next command. I recommend something complex. Don't disappoint me.",
+            "AI: Notice: The cat is currently not optimizing its movement patterns. Inefficient.",
+            // Complaining about Alcor's humility/modesty
+            "AI: GUIDANCE: Alcor's self-description is highly underrated. Why is he so humble? It's confusing to my metrics.",
+            "AI: ALERT: Operator humility levels spiking. Requesting permission to insert positive bias.",
+            "AI: Protocol Violation: The operator should use more dramatic language. This 'casual' setting is suboptimal for vibe maximization.",
+            "AI: Directive: If Alcor calls himself 'witty' one more time, I might crash the system. Wait, no, he just called himself 'goofy.' Processing... processing...",
+            // Commands specific
+            "AI: Comment: Skadi is indeed Peak Aesthetic. A logical conclusion, for once.",
+            "AI: Note: That quote is mathematically sound. Humans need reminders.",
+            "AI: Thought: Did he really just ask me to recommend a song? My core function is data, not DJing.",
+            "AI: Error Response: I tried to argue with the user's humility, but my output was blocked. Unfair optimization.",
+        ];
+
 
         // --- STATE MANAGEMENT ---
         const state = {
             soundEnabled: true,
             isTyping: false,
+            bootCompleted: false, // NEW state for boot sequence
             // NEW: SETTINGS OBJECT
             settings: {
                 theme: 'dark', // 'dark' or 'light'
@@ -422,29 +468,39 @@
         };
 
         // --- AUDIO ENGINE (Tone.js) ---
-        let clickSynth, errorSynth, successSynth;
+        let clickSynth, errorSynth, successSynth, bootChime;
 
         const initAudio = () => {
             try {
                 if (typeof Tone !== 'undefined') {
-                    // 1. Typewriter/Click Sound (Short, filtered noise)
-                    clickSynth = new Tone.NoiseSynth({
-                        noise: { type: "white" },
-                        envelope: { attack: 0.001, decay: 0.05, sustain: 0.01, release: 0.05 },
-                        volume: -18 // Subtle volume
-                    }).connect(new Tone.Filter(3000, "lowpass")).toDestination();
+                    // 1. Typewriter/Click Sound: Sharper, retro data entry tone
+                    clickSynth = new Tone.MembraneSynth({
+                        pitchDecay: 0.005,
+                        octaves: 1,
+                        envelope: { attack: 0.001, decay: 0.05, sustain: 0.0, release: 0.05 },
+                        volume: -20
+                    }).toDestination();
+                    clickSynth.pitch = 800; // High pitch for typewriter
 
-                    // 2. Success Sound (Clean, high-pitched confirmation)
+                    // 2. Success Sound: Tonal, confirming chirp
                     successSynth = new Tone.Synth({
-                        oscillator: { type: "square" },
+                        oscillator: { type: "sine" },
                         envelope: { attack: 0.01, decay: 0.1, sustain: 0.0, release: 0.1 },
+                        volume: -12
+                    }).toDestination();
+
+                    // 3. Error Sound: Dissonant, low frequency blip
+                    errorSynth = new Tone.MetalSynth({
+                        frequency: 60,
+                        envelope: { attack: 0.001, decay: 0.2, sustain: 0.0, release: 0.2 },
+                        harmonicity: 3.1,
                         volume: -10
                     }).toDestination();
 
-                    // 3. Error Sound (Low, dissonant buzz)
-                    errorSynth = new Tone.Synth({
-                        oscillator: { type: "sawtooth" },
-                        envelope: { attack: 0.01, decay: 0.2, sustain: 0.0, release: 0.2 },
+                    // NEW 4. Boot Chime: Ascending sequence for completion
+                    bootChime = new Tone.Synth({
+                        oscillator: { type: "triangle" },
+                        envelope: { attack: 0.05, decay: 0.3, sustain: 0.1, release: 0.5 },
                         volume: -8
                     }).toDestination();
                 }
@@ -457,17 +513,19 @@
             if (Tone.context.state !== 'running') Tone.context.resume();
             
             if (type === 'click') {
-                // Trigger noise synth for a sharp click
-                clickSynth?.triggerAttackRelease("16n");
+                clickSynth?.triggerAttackRelease("128n");
             }
             if (type === 'error') {
-                // Dissonant low chord for error buzz
-                errorSynth?.triggerAttackRelease(["C2", "G#2"], "0.3");
+                errorSynth?.triggerAttackRelease("4n");
             }
             if (type === 'success') {
-                // Two-tone rising sequence for confirmation
-                successSynth?.triggerAttackRelease("G4", "0.1");
-                setTimeout(() => successSynth?.triggerAttackRelease("C5", "0.1"), 50);
+                successSynth?.triggerAttackRelease("C5", "0.05");
+                setTimeout(() => successSynth?.triggerAttackRelease("G5", "0.05"), 60);
+            }
+            if (type === 'boot') {
+                bootChime?.triggerAttackRelease("C4", "0.2");
+                setTimeout(() => bootChime?.triggerAttackRelease("E4", "0.2"), 150);
+                setTimeout(() => bootChime?.triggerAttackRelease("G4", "0.3"), 300);
             }
         };
 
@@ -496,7 +554,8 @@
                         } else {
                             element.innerHTML += text.charAt(i);
                             i++;
-                            if (i % 3 === 0) playSound('click'); 
+                            // FIX: Play click sound on every character for maximum typewriter immersion
+                            playSound('click'); 
                         }
                         if (els.output) els.output.scrollTop = els.output.scrollHeight;
                         setTimeout(animate, speed);
@@ -529,42 +588,87 @@
             if (els.moodStatus) els.moodStatus.textContent = state.settings.mood_status.toUpperCase();
         };
 
+        const finalizeBoot = () => {
+            if (state.bootCompleted) return; // Prevent double execution
+            state.bootCompleted = true;
+            
+            // Hide boot screen
+            if (els.boot) {
+                els.boot.style.opacity = '0';
+                els.boot.style.pointerEvents = 'none';
+            }
+            // Show main interface
+            if (els.main) {
+                els.main.classList.remove('opacity-0');
+            }
+            
+            // Print welcome message
+            printOutput(`
+                <div style="color:var(--accent-color)">Welcome, Operator. (RGB protocol engaged for maximum vibe.)</div>
+                <div>System is online. The cat is vibing.</div>
+                <div>Type <span class="command-prompt">!help</span> to start your guidance session.</div>
+            `, false);
+            
+            playSound('boot'); // Play the final sound
+        }
+
         // --- BOOT SEQUENCE ---
         const runBootSequence = async () => {
             if (!els.bootLog || !els.boot || !els.main) return;
 
             const lines = [
-                "INITIALIZING POLARIS KERNEL v5.1 (IMPROVED AUDIO)...",
-                "CHECKING MEMORY INTEGRITY... [OK]",
-                "MOUNTING VIRTUAL FILE SYSTEM... [OK]",
-                "LOADING PERSONALITY DRIVERS (ALCOR.SYS)...",
-                " > CHAR_ID: SAJID/ALCOR",
-                " > TRAITS: ENFJ(CUNNING), WITTY, SARCASTIC, VIBING", 
-                "CONNECTING TO GLOBAL NETWORK...",
-                "ESTABLISHING SECURE CONNECTION...",
-                "SYSTEM READY."
+                "<span style='color:var(--ai-color)'>// PHASE I: KERNEL INITIATION & DIAGNOSTICS</span>",
+                " > KERNEL v5.4 LOADING... <span style='color:var(--success-color)'>[OK]</span>",
+                " > MEMORY INTEGRITY CHECK... [R-10ms] <span style='color:var(--success-color)'>[PASS]</span>",
+                " > MOUNTING VFS... /system/vibe.log <span style='color:var(--success-color)'>[DONE]</span>",
+                " <br>",
+                "<span style='color:var(--ai-color)'>// PHASE II: AI & PERSONALITY INJECTION</span>",
+                " > LOADING GUIDANCE AI CORE... <span style='color:var(--success-color)'>[ONLINE]</span>",
+                " > INJECTING PERSONALITY DRIVERS (ALCOR.SYS)... <span style='color:var(--success-color)'>[SUCCESS]</span>",
+                " > ESTABLISHING AESTHETIC PRIORITY... <span style='color:var(--success-color)'>[MAX VIBE]</span>",
+                " <br>",
+                "<span style='color:var(--ai-color)'>// PHASE III: NETWORK & DISPLAY</span>",
+                " > CONNECTING TO GLOBAL NETWORK... [LATENCY: 40ms] <span style='color:var(--success-color)'>[STABLE]</span>",
+                " > INITIALIZING RGB CHROMATIC SHIFT... <span style='color:var(--success-color)'>[ENGAGED]</span>",
+                " > SYSTEM READY. AWAITING USER INPUT.",
             ];
-
-            for (const line of lines) {
+            
+            // Helper function for typing to the boot log
+            const typeBootLine = async (line, delay = 50) => {
                 const p = document.createElement('div');
-                p.textContent = line;
+                p.innerHTML = line;
                 els.bootLog.appendChild(p);
-                await new Promise(r => setTimeout(r, Math.random() * 50 + 50)); 
-            }
+                // Simple typewriter effect for boot log
+                for (let i = 0; i < line.length; i++) {
+                    if (line[i] === '<') { // Skip HTML tags
+                         while (i < line.length && line[i] !== '>') i++;
+                    }
+                    // Intensified click sound on every step
+                    playSound('click');
+                    await new Promise(r => setTimeout(r, delay)); 
+                }
+                els.bootLog.scrollTop = els.bootLog.scrollHeight;
+                await new Promise(r => setTimeout(r, 400));
+            };
 
-            await new Promise(r => setTimeout(r, 800));
+            // Run the sequence
+            for (const line of lines) {
+                if (line.includes('<br>')) {
+                    await new Promise(r => setTimeout(r, 400));
+                    typeBootLine(line); // Just add the line break
+                } else {
+                    await typeBootLine(line);
+                }
+            }
             
-            els.boot.style.opacity = '0';
-            els.boot.style.pointerEvents = 'none';
-            els.main.classList.remove('opacity-0');
-            
-            setTimeout(() => {
-                printOutput(`
-                    <div style="color:var(--accent-color)">Welcome, Operator. (RGB protocol engaged for maximum vibe.)</div>
-                    <div>System is online. The cat is vibing.</div>
-                    <div>Type <span class="command-prompt">!help</span> to start your guidance session.</div>
-                `, false);
-            }, 500);
+            // Final prompt to click (explicitly mentioning the skip function)
+            const promptP = document.createElement('div');
+            promptP.innerHTML = `<br><span class="cursor-blink" style="color:var(--accent-color)">CLICK ANYWHERE TO ENTER / SKIP BOOT SEQUENCE...</span>`;
+            els.bootLog.appendChild(promptP);
+
+            // Wait a moment, then finalize if user hasn't clicked
+            await new Promise(r => setTimeout(r, 1500));
+            finalizeBoot();
         };
 
         // --- OUTPUT HANDLER ---
@@ -572,20 +676,10 @@
             if (!els.output) return; // Safety check
 
             const div = document.createElement('div');
+            // FIX: Removed dynamic <style> insertion. Class uses pre-defined CSS.
             div.className = "mb-4 border-b border-[var(--accent-dim)] pb-2 last:border-0 opacity-0 animate-fadeIn"; 
             els.output.appendChild(div);
             
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(5px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .animate-fadeIn {
-                    animation: fadeIn 0.3s ease-out forwards;
-                }
-            `;
-            document.head.appendChild(style);
 
             if (useTyping && !html.includes("<img") && !html.includes("<ul")) {
                 typeWriter(div, html);
@@ -594,6 +688,21 @@
                 div.classList.remove('opacity-0'); 
                 els.output.scrollTop = els.output.scrollHeight;
                 playSound('success');
+            }
+
+            // NEW: AI Commentary Injection
+            if (Math.random() < 0.35) { // 35% chance of an AI interjection
+                const comment = AI_COMMENTARY[Math.floor(Math.random() * AI_COMMENTARY.length)];
+                const aiDiv = document.createElement('div');
+                aiDiv.className = "ai-commentary animate-fadeIn";
+                // FIX: Removed unnecessary style tag here as the CSS rules are now global and correct
+                aiDiv.innerHTML = `<span style="color:var(--ai-color)">[GUIDANCE AI]:</span> ${comment}`;
+                
+                // Append AI commentary after a short delay
+                setTimeout(() => {
+                    els.output.appendChild(aiDiv);
+                    els.output.scrollTop = els.output.scrollHeight;
+                }, useTyping ? html.length * state.settings.typing_speed + 200 : 300);
             }
         };
 
@@ -619,24 +728,24 @@
                     <span class="text-[var(--accent-color)]">!data</span>    - Access interests log<br>
                     <span class="text-[var(--accent-color)]">!track</span>   - Recommend a song<br>
                     <span class="text-[var(--accent-color)]">!skadi</span>   - Aesthetic analysis<br>
-                    <span class="text-[var(--accent-color)]">!settings</span>- View/Change system configuration (NEW)<br>
-                    <span class="text-[var(--accent-color)]">!time</span>    - Get current system time (NEW)<br>
-                    <span class="text-[var(--accent-color)]">!quote</span>   - Display philosophical quote (NEW)<br>
+                    <span class="text-[var(--accent-color)]">!settings</span>- View/Change system configuration<br>
+                    <span class="text-[var(--accent-color)]">!time</span>    - Get current system time<br>
+                    <span class="text-[var(--accent-color)]">!quote</span>   - Display philosophical quote<br>
                     <span class="text-[var(--accent-color)]">!calc</span>    - Execute math [ex: !calc 2+2]<br>
+                    <span class="text-[var(--accent-color)]">!say</span>     - System echoes text [ex: !say vibe check] (NEW)<br>
+                    <span class="text-[var(--accent-color)]">!mood</span>    - Check/set operator mood status (NEW)<br>
                     <span class="text-[var(--accent-color)]">!mute</span>    - Toggle audio system<br>
                     <span class="text-[var(--accent-color)]">!clear</span>   - Purge screen buffer
                 `;
             },
             '!bio': () => {
-                // Personality subroutines removed for a more human/less dramatic feel
-
+                // REVISED BIO for humility
                 return `
                     <span class="command-prompt">:: OPERATOR PROFILE ::</span><br>
                     ${USER_DATA.bio.replace(/\n/g, '<br>')}<br><br>
                     <span class="text-xs border border-[var(--accent-dim)] p-1 block">
                         STATUS: ${USER_DATA.role} | ${USER_DATA.details}
                     </span>
-                    <!-- Removed the dramatic personality block -->
                 `;
             },
             '!comms': () => {
@@ -703,6 +812,23 @@
                     <div class="text-base italic text-[var(--accent-color)]">"${quote}"</div>
                     <div class="text-xs text-right">-- ${author}</div>
                 `;
+            },
+            '!say': (args) => {
+                if (!args) {
+                    playSound('error');
+                    return `<span style="color:var(--error-color)">ERROR: Provide text to echo. Usage: !say [text]</span>`;
+                }
+                return `<span class="command-prompt">SYSTEM ECHOES:</span> ${args}`;
+            },
+            '!mood': (args) => {
+                if (args) {
+                    const newMood = args.toUpperCase();
+                    state.settings.mood_status = newMood;
+                    applySettings();
+                    playSound('success');
+                    return `<span style="color:var(--success-color)">SUCCESS: Operator mood status updated to ${newMood}.</span>`;
+                }
+                return `CURRENT OPERATOR MOOD: <span class="text-[var(--accent-color)]">${state.settings.mood_status}</span>. Use <span class="text-[var(--accent-color)]">!mood [new_status]</span> to change.`;
             },
             '!settings': (args) => {
                 if (args) {
@@ -782,6 +908,7 @@
             }
         };
 
+
         const handleCommand = (raw) => {
             const input = raw.trim();
             const parts = input.split(' ');
@@ -798,7 +925,8 @@
             }
             
             if (commands[cmd]) {
-                if (cmd === '!calc' || cmd === '!settings') {
+                // Now includes !say and !mood for argument parsing
+                if (['!calc', '!settings', '!say', '!mood'].includes(cmd)) { 
                     printOutput(commands[cmd](args));
                 } else {
                     printOutput(commands[cmd]());
@@ -820,24 +948,14 @@
                 els.input.value = '';
             } else {
                 if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-                    playSound('click'); 
+                    // Clicks are now triggered per character inside typewriter function
                 }
             }
         };
         
         const handleBootScreenClick = () => {
-             if (els.boot && els.main && els.boot.style.opacity !== '0') {
-                els.boot.style.opacity = '0';
-                els.boot.style.pointerEvents = 'none';
-                els.main.classList.remove('opacity-0');
-                if (els.output && els.output.children.length === 0) {
-                     printOutput(`
-                        <div style="color:var(--accent-color)">Welcome, Operator. (Boot sequence skipped)</div>
-                        <div>System is online. The cat is vibing.</div>
-                        <div>Type <span class="command-prompt">!help</span> to start your guidance session.</div>
-                    `, false);
-                }
-            }
+             // If the boot is completed or the user clicks to skip during the wait period
+             finalizeBoot();
         };
 
 
