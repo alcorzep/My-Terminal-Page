@@ -4,22 +4,10 @@
     STATUS: PEAK AESTHETIC REACHED. COMMS UPDATED. ANIMATIONS ADDED.
     
     FIX LOG:
-    1. LAYOUT FIX: Removed h-full from main and added flex-grow to ensure the terminal output (#terminal-output) correctly fills the remaining vertical space and is not compressed by body padding.
-    2. PROGRESS BAR REMOVAL: Removed all HTML elements and JavaScript logic related to the progress bar.
-    3. FORMAL GREETER AND PERSONALITY FIX: Rewrote boot log and all command responses to adopt a formal, thoughtful, and conversational tone (removed slang). Initial greeting now clearly delineates [SYS] and [OPR] speakers.
-    4. BOOT LOG SIMPLIFICATION: Significantly shortened the initial boot log to reduce verbosity ("allat").
-    5. SKADI PROTOCOL UPDATE: Implemented the user's specific, highly devoted, and self-aware monologue for the !skadi command, adjusting the format for system/terminal output presentation.
-    6. SCROLL FIX: Removed 'overflow: hidden' from the body tag and changed 'height: 100vh' to 'min-height: 100vh' to allow the main application area to scroll when the content exceeds the viewport height.
-    7. TITLE FONT SIZE REDUCTION: Changed the font size classes on the main H1 title to be smaller.
-    8. DASHBOARD PRELOAD: Removed JS function to render links and placed the links directly in the HTML.
-    9. GREETER FIX: Ensured the greeter logic runs only once and reduced its size/length.
-    10. THEME/PROMPT FIX: Restored the missing 'toggleTheme' function and verified command input listener functionality.
-    11. SHADER FIX: Changed pseudo-elements for vignette and scanlines to `position: fixed` to ensure full viewport coverage during scrolling.
-    12. INPUT LOCK FIX (CRITICAL): Refactored `handleCommand` to be async and await the typing process, guaranteeing that the `state.isTyping` lock is released after every command execution, preventing permanent input failure.
-    13. AESTHETIC FIX: Removed the SVG noise filter from the body background to achieve a clean, plain color as requested.
-    14. !BIO FIX: Updated the operator profile to reflect a more casual persona, focusing on Discord use and infrequent editing.
-    15. **AESTHETIC FIX (BEEP/DOT):** Restructured the HTML and CSS for the system status indicator to ensure the pulsating dot is correctly layered over and aligned with the solid dot, fixing the positioning issue.
-    16. **CODE OPTIMIZATION:** Minor JS structural improvements and added more descriptive comments for maintainability and clarity.
+    1. FIX 1 (Input/Send): Added a robust try...finally block around command execution to guarantee the `state.isTyping` lock is ALWAYS released, addressing the post-load input freeze.
+    2. FIX 2 (Grid Layout): Changed `grid-cols-2 sm:grid-cols-3` to a universal `grid-cols-3` in the Dashboard for a consistent 3x3 layout on all screen sizes (mobile and desktop).
+    3. TWEAK 1 (Color Purge): Removed the `--success-color` (green) entirely. All success, system, and positive status indications now use the sepia/amber `--accent-color` for a clean, monochrome aesthetic.
+    4. GENERAL: Replaced 'green status' text with 'operational status' in line with the new color palette.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -60,7 +48,7 @@
             --accent-color: #dcbfa6;   /* The "Sepia" Glow */
             --accent-dim: #5c4e43;     /* Dimmed accent for borders */
             --error-color: #ff6b6b;    /* Retro Error Red */
-            --success-color: #a3d9a5;  /* Retro Success Green */
+            /* Success color removed - now uses accent-color */
             
             --scanline-opacity: 0.15;
             --phosphor-glow: 0 0 8px rgba(220, 191, 166, 0.4);
@@ -277,7 +265,7 @@
                     POLARIS
                 </h1>
                 
-                <!-- FIX: Status indicator restructured for correct pulsing alignment -->
+                <!-- Status indicator restructured for correct pulsing alignment -->
                 <div class="flex items-center gap-2 mt-2 text-xs font-bold tracking-widest text-[var(--text-muted)]">
                     <!-- Indicator Wrapper: w-2 h-2 to define size, relative to contain absolute children -->
                     <div class="relative w-2 h-2 mr-1"> 
@@ -323,57 +311,56 @@
 
         <!-- DASHBOARD (The quick links) -->
         <section class="terminal-box p-4 rounded-sm shrink-0">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+            <!-- LINKS: Universal 3-column grid enforced here -->
+            <div id="links-container" class="grid grid-cols-3 gap-3 text-xs mb-4 pb-4 border-b border-[var(--accent-dim)]">
                 <!-- Links are intentionally hardcoded for faster initial render (optimization) -->
-                <div id="links-container" class="col-span-2 md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-2">
-                    <a href="https://youtube.com/@NahZD" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
-                        <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">YOUTUBE</div>
-                        <div class="text-[10px] text-[var(--text-muted)]">MEDIA</div>
-                    </a>
-                    <a href="https://tiktok.com/@alcor.zep" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
-                        <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">TIKTOK</div>
-                        <div class="text-[10px] text-[var(--text-muted)]">MEDIA</div>
-                    </a>
-                    <a href="https://instagram.com/@alcor.zep" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
-                        <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">INSTAGRAM</div>
-                        <div class="text-[10px] text-[var(--text-muted)]">SOCIAL</div>
-                    </a>
-                    <a href="https://discord.com/users/747419107040690196" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
-                        <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">DISCORD (USER)</div>
-                        <div class="text-[10px] text-[var(--text-muted)]">SOCIAL</div>
-                    </a>
-                    <a href="https://discord.com/users/747419107040690196" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
-                        <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">DISCORD (SERVER)</div>
-                        <div class="text-[10px] text-[var(--text-muted)]">COMMUNITY</div>
-                    </a>
-                    <a href="https://open.spotify.com/user/31ag2h6ylpngleeu6oefkpmql6km" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
-                        <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">SPOTIFY</div>
-                        <div class="text-[10px] text-[var(--text-muted)]">MEDIA</div>
-                    </a>
-                    <a href="https://steamcommunity.com/id/alcorzep" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
-                        <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">STEAM</div>
-                        <div class="text-[10px] text-[var(--text-muted)]">GAMING</div>
-                    </a>
-                    <a href="https://www.roblox.com/users/SDEDIN" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
-                        <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">ROBLOX</div>
-                        <div class="text-[10px] text-[var(--text-muted)]">GAMING</div>
-                    </a>
-                    <a href="https://github.com/alcorzep" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
-                        <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">GITHUB (alcorzep)</div>
-                        <div class="text-[10px] text-[var(--text-muted)]">CODE</div>
-                    </a>
+                <a href="https://youtube.com/@NahZD" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
+                    <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">YOUTUBE</div>
+                    <div class="text-[10px] text-[var(--text-muted)]">MEDIA</div>
+                </a>
+                <a href="https://tiktok.com/@alcor.zep" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
+                    <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">TIKTOK</div>
+                    <div class="text-[10px] text-[var(--text-muted)]">MEDIA</div>
+                </a>
+                <a href="https://instagram.com/@alcor.zep" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
+                    <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">INSTAGRAM</div>
+                    <div class="text-[10px] text-[var(--text-muted)]">SOCIAL</div>
+                </a>
+                <a href="https://discord.com/users/747419107040690196" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
+                    <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">DISCORD (USER)</div>
+                    <div class="text-[10px] text-[var(--text-muted)]">SOCIAL</div>
+                </a>
+                <a href="https://discord.com/users/747419107040690196" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
+                    <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">DISCORD (SERVER)</div>
+                    <div class="text-[10px] text-[var(--text-muted)]">COMMUNITY</div>
+                </a>
+                <a href="https://open.spotify.com/user/31ag2h6ylpngleeu6oefkpmql6km" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
+                    <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">SPOTIFY</div>
+                    <div class="text-[10px] text-[var(--text-muted)]">MEDIA</div>
+                </a>
+                <a href="https://steamcommunity.com/id/alcorzep" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
+                    <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">STEAM</div>
+                    <div class="text-[10px] text-[var(--text-muted)]">GAMING</div>
+                </a>
+                <a href="https://www.roblox.com/users/SDEDIN" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
+                    <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">ROBLOX</div>
+                    <div class="text-[10px] text-[var(--text-muted)]">GAMING</div>
+                </a>
+                <a href="https://github.com/alcorzep" target="_blank" class="block p-2 border border-[var(--glass-bg)] hover:border-[var(--accent-color)] hover:bg-[var(--glass-bg)] transition-all group hover:shadow-lg hover:shadow-[rgba(220,191,166,0.2)]">
+                    <div class="font-bold text-[var(--accent-color)] group-hover:translate-x-1 transition-transform">GITHUB (alcorzep)</div>
+                    <div class="text-[10px] text-[var(--text-muted)]">CODE</div>
+                </a>
+            </div>
+            
+            <!-- Status Panel -->
+            <div class="opacity-70 grid grid-cols-2 gap-4">
+                <div>
+                    <div class="font-bold text-[var(--accent-color)] mb-1">OPERATOR</div>
+                    <div>ZEP / ALCOR</div>
                 </div>
-                
-                <!-- Status Panel -->
-                <div class="col-span-2 md:col-span-1 border-l border-[var(--accent-dim)] pl-4 flex flex-col justify-between opacity-70">
-                    <div>
-                        <div class="font-bold text-[var(--accent-color)] mb-1">OPERATOR</div>
-                        <div>ZEP / ALCOR</div>
-                    </div>
-                    <div>
-                        <div class="font-bold text-[var(--accent-color)] mb-1">CURRENT MOOD</div>
-                        <div id="mood-status">OPERATIONAL</div>
-                    </div>
+                <div>
+                    <div class="font-bold text-[var(--accent-color)] mb-1">CURRENT MOOD</div>
+                    <div id="mood-status">OPERATIONAL</div>
                 </div>
             </div>
         </section>
@@ -382,7 +369,7 @@
 
     <script>
         /*
-         * POLARIS SYSTEM CORE v4.6 (AESTHETIC & PERFORMANCE OPTIMIZATION)
+         * POLARIS SYSTEM CORE v4.7 (CRITICAL FIXES APPLIED)
          */
 
         // --- CONSTANTS & DATA ---
@@ -429,10 +416,9 @@
             boot: document.getElementById('boot-screen'),
             bootLog: document.getElementById('boot-log'),
             main: document.getElementById('main-interface'),
-            links: document.getElementById('links-container'), // Note: this is for potential future use if links become dynamic
+            links: document.getElementById('links-container'), 
             prompt: document.getElementById('prompt-label'),
-            soundStatus: document.getElementById('sound-status'),
-            skipInstruction: document.getElementById('skip-instruction')
+            soundStatus: document.getElementById('sound-status')
         };
 
         // --- AUDIO ENGINE (Tone.js) ---
@@ -452,11 +438,16 @@
 
         const playSound = (type = 'click') => {
             if (!state.soundEnabled || !synth) return;
-            if (Tone.context.state !== 'running') Tone.context.resume();
+            // Always resume context on interaction if suspended (CRITICAL for mobile/iframe audio)
+            if (Tone.context.state !== 'running') {
+                 try {
+                    Tone.context.resume();
+                 } catch(e) { console.error("Could not resume AudioContext:", e); }
+            }
             
             if (type === 'click') synth.triggerAttackRelease("C2", "32n");
             if (type === 'error') synth.triggerAttackRelease("G1", "16n");
-            if (type === 'success') synth.triggerAttackRelease("C4", "16n");
+            if (type === 'success') synth.triggerAttackRelease("C4", "16n"); // Success uses same frequency, but its color is now sepia
         };
         
         // --- THEME TOGGLE ---
@@ -468,7 +459,7 @@
             } else {
                 icon.setAttribute('data-lucide', 'moon');
             }
-            // Re-render Lucide icons if the library is loaded (ensures proper display after toggle)
+            // Re-render Lucide icons if the library is loaded 
             if (typeof lucide !== 'undefined' && lucide.createIcons) {
                  lucide.createIcons();
             }
@@ -485,8 +476,14 @@
                         // Check for HTML tags to inject them instantly without typing
                         if (text[i] === '<') {
                             const end = text.indexOf('>', i);
-                            element.innerHTML += text.substring(i, end + 1);
-                            i = end + 1;
+                            if (end !== -1) {
+                                element.innerHTML += text.substring(i, end + 1);
+                                i = end + 1;
+                            } else {
+                                // Fallback for unmatched '<' (treat as normal char)
+                                element.innerHTML += text.charAt(i);
+                                i++;
+                            }
                         } else {
                             element.innerHTML += text.charAt(i);
                             i++;
@@ -499,6 +496,7 @@
                         els.output.scrollTop = els.output.scrollHeight;
                         setTimeout(animate, speed);
                     } else {
+                        state.isTyping = false; // Final release
                         resolve();
                     }
                 };
@@ -515,10 +513,11 @@
             printPrompt("System initialization complete. Authentication established.", 'sys');
             await new Promise(r => setTimeout(r, 300)); 
             
+            // Use typing for the final greeting, which properly sets state.isTyping
             await printOutput(`
                 <div class="text-sm md:text-base text-[var(--text-main)]">Operator Sajid (POLARIS) online. All core systems operational.</div>
                 <div>Awaiting command. Utilize <span class="command-prompt text-[var(--accent-color)]">!help</span> for protocol documentation.</div>
-            `, true); // Use typing for the final greeting
+            `, true); 
         };
         
         // New function to handle post-boot cleanup and greeting
@@ -526,7 +525,9 @@
             if (!state.isBooting) return; 
 
             state.isBooting = false;
-            els.skipInstruction.textContent = 'SYSTEM PROMPT: Boot sequence complete. Awaiting user input.';
+            // The skip instruction is handled here
+            const skipEl = document.getElementById('skip-instruction');
+            if (skipEl) skipEl.textContent = 'SYSTEM PROMPT: Boot sequence complete. Awaiting user input.';
 
             // Transition: Fade out boot screen
             els.boot.style.opacity = '0';
@@ -537,7 +538,7 @@
 
         const runBootSequence = async () => {
             const lines = [
-                "INITIALIZING POLARIS KERNEL v4.6...",
+                "INITIALIZING POLARIS KERNEL v4.7...",
                 "CHECKING MEMORY INTEGRITY... [OK]",
                 "MOUNTING VIRTUAL FILE SYSTEM... [OK]",
                 "LOADING PERSONALITY DRIVERS (ALCOR.SYS)... [STATUS: CONFIGURATION ACTIVE]",
@@ -584,7 +585,8 @@
             const div = document.createElement('div');
             div.className = "mb-1 text-sm opacity-70 animate-fadeIn shrink-0";
             const prefix = type === 'user' ? 'OPR' : 'SYS'; 
-            const color = type === 'user' ? 'var(--text-muted)' : 'var(--success-color)';
+            // ALL system output now uses the accent color (sepia/amber)
+            const color = type === 'user' ? 'var(--text-muted)' : 'var(--accent-color)';
             div.innerHTML = `<span style="color:${color}">[${prefix}]:</span> ${cmd}`;
             els.output.appendChild(div);
             els.output.scrollTop = els.output.scrollHeight;
@@ -691,7 +693,8 @@
             '!mute': () => {
                 state.soundEnabled = !state.soundEnabled;
                 els.soundStatus.textContent = state.soundEnabled ? "AUDIO: ON" : "AUDIO: OFF";
-                return `AUDIO SYSTEM: <span style="color:${state.soundEnabled ? 'var(--success-color)' : 'var(--error-color)'}">${state.soundEnabled ? 'ONLINE' : 'OFFLINE'}</span>`;
+                // Use accent color for ONLINE status
+                return `AUDIO SYSTEM: <span style="color:${state.soundEnabled ? 'var(--accent-color)' : 'var(--error-color)'}">${state.soundEnabled ? 'ONLINE' : 'OFFLINE'}</span>`;
             },
             '!ping': () => {
                 return `
@@ -699,7 +702,7 @@
                     Core Identity: ALCOR.SYS<br>
                     Role: OPERATIONAL<br>
                     Time on GMT+6: ${(new Date()).toLocaleTimeString()}<br>
-                    <span style="color:var(--success-color)">Latency: Nominal. All systems report green status.</span>
+                    <span style="color:var(--accent-color)">Latency: Nominal. All systems report operational status.</span>
                 `;
             },
              '!calc': (args) => {
@@ -733,48 +736,56 @@
             // Universal lock at the start of command execution (CRITICAL for flow control)
             state.isTyping = true; 
 
-            let output = '';
-            let useTyping = true;
+            try {
+                let output = '';
+                let useTyping = true;
 
-            if (cmd === '!clear') {
-                els.output.innerHTML = '';
-                playSound('success');
-                state.isTyping = false; // Release lock immediately for clear command
-                return;
-            }
-
-            if (cmd === '!calc' || cmd === '!mute' || cmd === '!ping') {
-                // Commands that produce instant, non-typed output
-                useTyping = false; 
-                output = commands[cmd] ? commands[cmd](args) : commands['!help'](); // Fallback to help if invalid but starts with '!'
-            } else if (commands[cmd]) {
-                output = commands[cmd]();
-                // Check if the output is pre-formatted list (like !comms) and shouldn't be typed
-                if (output.includes("<ul")) { 
-                    useTyping = false;
+                if (cmd === '!clear') {
+                    els.output.innerHTML = '';
+                    playSound('success');
+                    return; // Return immediately, lock is released in finally block
                 }
-            } else {
-                output = `<span style="color:var(--error-color)">[ERR]: UNKNOWN PROTOCOL '${cmd}'.</span><div>The protocol requested is not recognized by the system. Please consult the <span class="command-prompt">!help</span> documentation.</div>`;
+
+                if (cmd === '!calc' || cmd === '!mute' || cmd === '!ping') {
+                    // Commands that produce instant, non-typed output
+                    useTyping = false; 
+                    output = commands[cmd] ? commands[cmd](args) : commands['!help'](); // Fallback to help if invalid but starts with '!'
+                } else if (commands[cmd]) {
+                    output = commands[cmd]();
+                    // Check if the output is pre-formatted list (like !comms) and shouldn't be typed
+                    if (output.includes("<ul")) { 
+                        useTyping = false;
+                    }
+                } else {
+                    output = `<span style="color:var(--error-color)">[ERR]: UNKNOWN PROTOCOL '${cmd}'.</span><div>The protocol requested is not recognized by the system. Please consult the <span class="command-prompt">!help</span> documentation.</div>`;
+                    playSound('error');
+                    useTyping = false; 
+                }
+                
+                // Await the output printing (which includes typing if 'useTyping' is true)
+                await printOutput(output, useTyping);
+                
+            } catch (error) {
+                console.error("Command Execution Error:", error);
+                // Log and provide a graceful error message to the user
+                printOutput(`<span style="color:var(--error-color)">[SYS FAIL]: CRITICAL EXECUTION ERROR.</span> <div>Log: ${error.message}. Process terminated.</div>`, false);
                 playSound('error');
-                useTyping = false; 
+            } finally {
+                // UNIVERSAL UNLOCK (CRITICAL FIX): This ensures the input is always usable.
+                state.isTyping = false;
             }
-            
-            // Await the output printing (which includes typing)
-            await printOutput(output, useTyping);
-            
-            // Universal unlock after the process is complete
-            state.isTyping = false; 
         };
 
         // --- EVENTS ---
         els.input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent accidental form submission/new line
                 if (state.isTyping) return; 
                 handleCommand(els.input.value); 
                 els.input.value = '';
-            } else {
-                // Throttle sound play during rapid typing
-                if (Date.now() % 50 === 0) playSound('click'); 
+            } else if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Delete') {
+                // Play sound for visible character keys
+                playSound('click'); 
             }
         });
         
