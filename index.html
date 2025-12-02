@@ -11,11 +11,12 @@
     5. SKADI PROTOCOL UPDATE: Implemented the user's specific, highly devoted, and self-aware monologue for the !skadi command, adjusting the format for system/terminal output presentation.
     6. SCROLL FIX: Removed 'overflow: hidden' from the body tag and changed 'height: 100vh' to 'min-height: 100vh' to allow the main application area to scroll when the content exceeds the viewport height.
     7. TITLE FONT SIZE REDUCTION: Changed the font size classes on the main H1 title to be smaller.
-    8. DASHBOARD PRELOAD: Removed the full-interface fade-in, allowing the header and the dashboard (social bar) to appear immediately after the boot screen is dismissed.
+    8. DASHBOARD PRELOAD: Removed JS function to render links and placed the links directly in the HTML.
     9. GREETER FIX: Ensured the greeter logic runs only once and reduced its size/length.
     10. THEME/PROMPT FIX: Restored the missing 'toggleTheme' function and verified command input listener functionality.
-    11. **SHADER FIX:** Changed pseudo-elements for vignette and scanlines to `position: fixed` to ensure full viewport coverage during scrolling.
-    12. **DASHBOARD PRELOAD:** Removed JS function to render links and placed the links directly in the HTML.
+    11. SHADER FIX: Changed pseudo-elements for vignette and scanlines to `position: fixed` to ensure full viewport coverage during scrolling.
+    12. **INPUT LOCK FIX (CRITICAL):** Refactored `handleCommand` to be async and await the typing process, guaranteeing that the `state.isTyping` lock is released after every command execution, preventing permanent input failure.
+    13. **AESTHETIC FIX:** Removed the SVG noise filter from the body background to achieve a clean, plain color as requested.
     
     PERFORMANCE OPTIMIZATION LOG (Existing):
     1. Added 'defer' to all external <script> tags.
@@ -87,8 +88,9 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             font-family: 'IBM Plex Mono', monospace;
-            /* SVG Noise Filter for texture */
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitch='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            /* AESTHETIC FIX: Removed SVG Noise Filter */
+            /* background-image: url("data:image/svg+xml,..."); */
+            
             /* FIX: Changed height to min-height for full page scrolling */
             min-height: 100vh;
             display: flex;
@@ -384,14 +386,13 @@
 
     <script>
         /*
-         * POLARIS SYSTEM CORE v4.4 (CORE IDENTITY SCAN)
+         * POLARIS SYSTEM CORE v4.5 (INPUT LOCK FIX)
          */
 
         // --- CONSTANTS & DATA ---
         const USER_DATA = {
             name: "Sajid",
             role: "System Operator",
-            // UPDATED DETAILS (Formal/Thoughtful)
             details: "Age: 19 | Pronouns: He/Him | Type: ENFJ | Location: GMT+6 (Bangladesh) | Focus: Skadi Lore (Arknights)", 
             bio: `
                 [LOG_ENTRY_01]: Greetings.
@@ -422,7 +423,7 @@
             soundEnabled: true,
             isTyping: false,
             isBooting: true, 
-            greetingDisplayed: false, // New flag to prevent double greeting
+            greetingDisplayed: false,
         };
 
         // --- DOM ELEMENTS ---
@@ -477,10 +478,10 @@
             playSound('click');
         };
 
-        // --- VISUAL FX: TYPEWRITER ---
+        // --- VISUAL FX: TYPEWRITER (Removed isTyping=false on resolve, now handled by handleCommand) ---
         const typeWriter = (element, text, speed = 10) => {
             return new Promise(resolve => {
-                state.isTyping = true;
+                state.isTyping = true; // Set true here
                 let i = 0;
                 const animate = () => {
                     if (i < text.length) {
@@ -496,7 +497,7 @@
                         els.output.scrollTop = els.output.scrollHeight;
                         setTimeout(animate, speed);
                     } else {
-                        state.isTyping = false;
+                        // FIX: Do not set state.isTyping = false here. Let handleCommand do the universal release.
                         resolve();
                     }
                 };
@@ -515,7 +516,7 @@
             printPrompt("System initialization complete. Authentication established.", 'sys');
             await new Promise(r => setTimeout(r, 300)); // Shorter delay
             
-            // Print the operator's response as a main output block, using a slightly smaller font size for the first line
+            // This printOutput is not awaited and uses typing=false, but it's safe because isTyping is false after boot.
             printOutput(`
                 <div class="text-sm md:text-base text-[var(--text-main)]">Operator Sajid (POLARIS) online. All core systems operational.</div>
                 <div>Awaiting command. Utilize <span class="command-prompt text-[var(--accent-color)]">!help</span> for protocol documentation.</div>
@@ -539,7 +540,6 @@
         }
 
         const runBootSequence = async () => {
-            // SIMPLIFIED, FORMALIZED BOOT LINES
             const lines = [
                 "INITIALIZING POLARIS KERNEL v4.4...",
                 "CHECKING MEMORY INTEGRITY... [OK]",
@@ -557,7 +557,6 @@
                 p.textContent = line;
                 els.bootLog.appendChild(p);
                 
-                // Slightly slower typing for clarity
                 await new Promise(r => setTimeout(r, Math.random() * 50 + 100)); 
             }
             
@@ -568,7 +567,8 @@
         };
 
         // --- OUTPUT HANDLER ---
-        const printOutput = (html, useTyping = true) => {
+        // FIX: Made printOutput async to await typeWriter completion
+        const printOutput = async (html, useTyping = true) => {
             const div = document.createElement('div');
             div.className = "mb-4 border-b border-[var(--accent-dim)] pb-2 last:border-0 animate-fadeIn"; 
             els.output.appendChild(div);
@@ -576,7 +576,7 @@
             if (useTyping && !html.includes("<img") && !html.includes("<ul")) {
                 div.classList.remove('animate-fadeIn'); 
                 div.style.opacity = 1; 
-                typeWriter(div, html);
+                await typeWriter(div, html); // Await the typing process
             } else {
                 div.innerHTML = html;
                 els.output.scrollTop = els.output.scrollHeight;
@@ -644,7 +644,6 @@
                 return html;
             },
             '!skadi': () => {
-                // UPDATED MONOLOGUE (User's high-devotion, self-aware text, formatted for terminal)
                 const skadiMonologue = `
                     <span class="command-prompt" style="color: var(--accent-color);">// EXECUTION: SKADI WORSHIP PROTOCOL [STATUS: ENGAGED] //</span>
                     <br>
@@ -721,7 +720,10 @@
             }
         };
 
-        const handleCommand = (raw) => {
+        // FIX: handleCommand is now async to manage the input lock correctly.
+        const handleCommand = async (raw) => {
+            if (state.isTyping) return; 
+
             const input = raw.trim();
             const parts = input.split(/\s+/);
             const cmd = parts[0].toLowerCase();
@@ -730,35 +732,48 @@
             if (!input) return;
 
             printPrompt(input, 'user');
+            
+            // Universal lock at the start of command execution
+            state.isTyping = true; 
+
+            let output = '';
+            let useTyping = true;
 
             if (cmd === '!clear') {
                 els.output.innerHTML = '';
                 playSound('success');
+                state.isTyping = false; // Release lock immediately for clear command
                 return;
             }
 
             if (cmd === '!calc') {
-                const output = commands['!calc'](args);
-                printOutput(output, false);
-                return;
-            }
-
-            if (commands[cmd]) {
-                printOutput(commands[cmd](), cmd !== '!mute' && cmd !== '!ping');
+                output = commands['!calc'](args);
+                useTyping = false; // Calculator results are instant
+            } else if (commands[cmd]) {
+                output = commands[cmd]();
+                // Check if the output contains lists or images, or if it's a specific command that should not be typed
+                if (cmd === '!mute' || cmd === '!ping' || output.includes("<ul") || output.includes("<img")) {
+                    useTyping = false;
+                }
             } else {
-                printOutput(`
-                    <span style="color:var(--error-color)">[ERR]: UNKNOWN PROTOCOL '${cmd}'.</span>
-                    <div>The protocol requested is not recognized by the system. Please consult the <span class="command-prompt">!help</span> documentation.</div>
-                `);
+                output = `<span style="color:var(--error-color)">[ERR]: UNKNOWN PROTOCOL '${cmd}'.</span><div>The protocol requested is not recognized by the system. Please consult the <span class="command-prompt">!help</span> documentation.</div>`;
                 playSound('error');
+                useTyping = false; // Errors are instant
             }
+            
+            // Await the output printing (which includes typing)
+            await printOutput(output, useTyping);
+            
+            // Universal unlock after the process is complete
+            state.isTyping = false; 
         };
 
         // --- EVENTS ---
         els.input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 if (state.isTyping) return; 
-                handleCommand(els.input.value);
+                // The handleCommand is now async, but the listener doesn't need to await it.
+                handleCommand(els.input.value); 
                 els.input.value = '';
             } else {
                 if (Date.now() % 50 === 0) playSound('click'); 
@@ -768,7 +783,6 @@
         // Skip boot sequence on click/tap
         els.boot.addEventListener('click', () => {
             if (state.isBooting) {
-                // Now just call the dedicated finalizer function
                 finalizeBootAndGreet();
             }
         });
@@ -782,7 +796,7 @@
                  lucide.createIcons();
             }
 
-            runBootSequence(); // This starts the delay and calls finalizeBootAndGreet upon completion
+            runBootSequence(); 
             
             // Focus input on click anywhere
             document.addEventListener('click', (e) => {
